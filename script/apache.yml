@@ -1,0 +1,36 @@
+- hosts: webservers
+#  sudo: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Instalar o Apache 2
+      apt: name=apache2 update_cache=yes state=latest
+
+    - name: Instalar PHP
+      package: name=libapache2-mod-php state=present
+      notify:
+        - restart apache2
+
+    - name: Habilitar rewrite
+      apache2_module: name=rewrite state=present
+      notify:
+        - restart apache2
+
+    - name: Copiar /etc/apache2/sites-available/000-default.conf
+      template:
+        src: templates/apache-default.j2
+        dest: /etc/apache2/sites-available/000-default.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - restart apache2
+
+    - name: Baixar os fontes do github
+      git:
+        repo: https://github.com/Andropovbr/prova-devops-tray
+        dest: /var/www/html/perguntas
+
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted

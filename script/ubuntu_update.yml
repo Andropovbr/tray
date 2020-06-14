@@ -1,0 +1,13 @@
+- hosts: webservers
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Atualizar o repositório
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+    - name: Atualizar os pacotes
+      apt: upgrade=dist force_apt_get=yes
+
+    - name: Verificar se é necessário reiniciar o servidor
+      register: reboot_required_file
+      stat: path=/var/run/reboot-required get_md5=no

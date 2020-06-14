@@ -1,0 +1,2 @@
+ansible-playbook ubuntu_update.yml
+ansible-playbook apache.yml
